@@ -2,8 +2,6 @@
 
 把 **eNSP Pro** 的沙箱、设备、连线、拓扑、Console 和命令执行能力，通过标准 **MCP（Model Context Protocol）** 协议暴露给 AI Agent，让「用一句话搭实验拓扑、敲设备命令」成为现实。
 
-**无需模拟器自带 API、无需二次登录、无需外网**：复用浏览器里已经登录的 eNSP 页面会话，离线也能跑。
-
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933)
 ![MCP](https://img.shields.io/badge/MCP-stdio-8A2BE2)
@@ -11,10 +9,7 @@
 
 ---
 
-<!-- 配图位：把截图放到 docs/images/preview.png，下面这段会自动显示；没放图前显示 alt 文本 -->
 ![eNSP-Pro MCP 界面预览](docs/images/preview.png)
-
-> 建议截图内容：AI 客户端里一句「在沙箱 16 上执行 display version」→ 返回设备版本信息，或拓扑自动标注效果图。
 
 ---
 
@@ -44,9 +39,9 @@ mcp/server.js  ──HTTP──▶  bridge/server.js（127.0.0.1:8790）
                         eNSP Pro Web 服务器
 ```
 
-- **mcp/**：注册工具、校验参数、转发调用；启动时自动拉起 bridge，bridge 掉线会自动重连
-- **bridge/**：本地中间层。浏览器不能监听端口，所以由扩展主动连入，MCP 通过 HTTP 调用
-- **extension/**：在 eNSP 页面上下文发请求，天然复用登录态；负责 Console 会话与提示符识别
+- **mcp/**：注册工具、校验参数、转发调用；启动时自动拉起 bridge，bridge 掉线会自动重连；MCP 退出时自动清理 bridge 进程与 8790 端口
+- **bridge/**：本地中间层。浏览器不能监听端口，所以由扩展主动连入，MCP 通过 HTTP 调用；负责大输出缓存（>10KB 写系统临时目录，返回 preview + output_file）
+- **extension/**：在 eNSP 页面上下文发请求，天然复用登录态；负责 Console 会话、提示符识别、自动翻页与确认应答
 
 ## 三、环境要求
 
@@ -95,7 +90,7 @@ npm install
 
 - Windows 下若 `node` 不在 PATH，把 `command` 换成 node 绝对路径，例如 `C:\\Program Files\\nodejs\\node.exe`
 - 修改配置后**重载窗口 / 重启客户端**，工具列表才会刷新
-- 无需手动启动 bridge：MCP 服务启动后会在后台自动拉起；排障时可前台运行 `node bridge/server.js` 观察日志
+- bridge 会随 MCP **自动拉起**并随 MCP **自动清理**，无需单独手动管理；排障时可前台运行 `node bridge/server.js` 观察日志
 
 ### 第 4 步：直接对话
 对 AI 说这些话即可，不用手写工具参数：
@@ -128,6 +123,8 @@ npm install
 | 工具列表为空 | 改完配置未重载客户端，重载窗口即可 |
 | 端口冲突 `EADDRINUSE` | 设置环境变量 `ENSP_BRIDGE_PORT` 换端口（MCP 与 bridge 需一致） |
 | 返回「登录失效」 | 浏览器侧 eNSP 会话过期，重新登录页面 |
+| 输出带 `truncated: true` + `output_file` | Console 输出超过 10KB（`ENSP_CACHE_THRESHOLD`），完整内容已写入系统临时目录；Agent 用 Read 工具读 `output_file` 即可 |
+| MCP 退出后 bridge 还在跑？ | 正常情况应该同步清理；若残留是上次 MCP 异常退出未触发钩子，手动 kill 即可，MCP 重启时也会兜底清端口 |
 
 ## 七、目录结构
 
