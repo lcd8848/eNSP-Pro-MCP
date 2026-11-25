@@ -1,0 +1,36 @@
+{
+  "_comment": "拓扑标注规划书示例（沙箱15）。复制本文件按实际拓扑修改后，用 --spec 传入即可优先按规划值标注，无需启动设备。",
+  "zones": [
+    { "name": "出口区", "shape": "rectangle", "color": "#E67E22", "devices": ["AR-1", "AR-2"] },
+    { "name": "核心区", "shape": "ellipse", "color": "#8E44AD", "devices": ["Core-1"] },
+    { "name": "接入区", "shape": "rectangle", "color": "#27AE60", "devices": ["Acc-1", "PC-1", "PC-2"] },
+    { "name": "服务器区", "shape": "ellipse", "color": "#2980B9", "devices": ["Acc-2", "SRV-1"] }
+  ],
+  "devices": {
+    "AR-1": {
+      "interfaces": [
+        { "name": "GE0/0/0", "ip": "10.0.1.1/30" },
+        { "name": "LoopBack0", "ip": "1.1.1.1/32" },
+        { "name": "MEth0/0/0", "ip": "192.168.1.1/24" }
+      ]
+    },
+    "AR-2": {
+      "interfaces": [
+        { "name": "GE0/0/0", "ip": "10.0.1.5/30" },
+        { "name": "LoopBack0", "ip": "2.2.2.2/32" },
+        { "name": "MEth0/0/0", "ip": "192.168.1.1/24" }
+      ]
+    },
+    "Core-1": {
+      "interfaces": [
+        { "name": "Vlanif10", "ip": "192.168.10.1/24" },
+        { "name": "Vlanif20", "ip": "192.168.20.1/24" },
+        { "name": "Vlanif100", "ip": "10.0.1.2/30" },
+        { "name": "Vlanif101", "ip": "10.0.1.6/30" }
+      ]
+    },
+    "PC-1": { "interfaces": [{ "name": "GE1/0/0", "ip": "192.168.10.121/24" }] },
+    "PC-2": { "interfaces": [{ "name": "GE1/0/0", "ip": "192.168.10.69/24" }] },
+    "SRV-1": { "interfaces": [{ "name": "GE1/0/0", "ip": "192.168.20.10/24" }] }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "ensp-webmcp",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "eNSP WebMCP：通过浏览器插件复用已登录页面，把 Web 层能力桥接给本地 MCP",
+  "scripts": {
+    "bridge": "node bridge/server.js",
+    "bridge:stable": "node bridge/server.js --no-hot",
+    "cli": "node bridge/cli.js",
+    "mcp": "node mcp/server.js",
+    "test": "node mcp/selftest.js mock",
+    "dist": "node scripts/build-dist.mjs",
+    "dist:clean": "node scripts/build-dist.mjs --clean"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "ws": "^8.18.0",
+    "zod": "^4.6.7"
+  }
+}

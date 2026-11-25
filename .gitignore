@@ -1,0 +1,5 @@
+node_modules/
+.deps-stamp
+*.log
+.DS_Store
+Thumbs.db

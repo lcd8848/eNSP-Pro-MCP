@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "eNSP WebMCP Bridge",
+  "version": "0.2.0",
+  "description": "把已登录的 eNSP Web 页面桥接给本地 MCP，无需账号密码",
+  "host_permissions": ["https://10.10.10.130:8443/*", "http://127.0.0.1:8790/*"],
+  "permissions": ["alarms", "storage", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://10.10.10.130:8443/*"],
+      "js": ["ws-monitor.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://10.10.10.130:8443/*"],
+      "js": ["console-driver.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "eNSP WebMCP Bridge"
+  }
+}
